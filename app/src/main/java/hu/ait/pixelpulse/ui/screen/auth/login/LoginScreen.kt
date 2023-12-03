@@ -50,7 +50,7 @@ fun LoginScreen(
 
     Box() {
         Text(
-            text = "AIT Forum",
+            text = "Pixel Pulse",
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .padding(top = 50.dp),
