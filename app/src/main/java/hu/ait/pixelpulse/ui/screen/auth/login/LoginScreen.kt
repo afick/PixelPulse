@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -19,6 +20,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,10 +45,13 @@ fun LoginScreen(
     onLoginSuccess: () -> Unit
 ) {
     var showPassword by rememberSaveable { mutableStateOf(false) }
-    var email by rememberSaveable { mutableStateOf("alexfick13@gmail.com") }
-    var password by rememberSaveable { mutableStateOf("123456") }
+    var email by rememberSaveable { mutableStateOf("") }
+    var password by rememberSaveable { mutableStateOf("") }
 
     val coroutineScope = rememberCoroutineScope()
+    var login by rememberSaveable { mutableStateOf(false) }
+    var register by rememberSaveable { mutableStateOf(false) }
+
 
     Box() {
         Text(
@@ -56,85 +61,174 @@ fun LoginScreen(
                 .padding(top = 50.dp),
             fontSize = 30.sp
         )
-        Column(
-            modifier = Modifier
-                .align(Alignment.Center)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(0.8f),
-                label = {
-                    Text(text = "E-mail")
-                },
-                value = email,
-                onValueChange = {
-                    email = it
-                },
-                singleLine = true,
-                leadingIcon = {
-                    Icon(Icons.Default.Email, null)
-                }
-            )
-            OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(0.8f),
-                label = {
-                    Text(text = "Password")
-                },
-                value = password,
-                onValueChange = { password = it },
-                singleLine = true,
-                visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
-                leadingIcon = {
-                    Icon(Icons.Default.Password, null)
-                },
-                trailingIcon = {
-                    IconButton(onClick = { showPassword = !showPassword }) {
-                        if (showPassword) {
-                            Icon(Icons.Default.Visibility, null)
-                        } else {
-                            Icon(Icons.Default.VisibilityOff, null)
-                        }
-                    }
-                }
-            )
-            Row(
-                modifier = Modifier.fillMaxWidth(0.8f),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                OutlinedButton(onClick = {
-                    coroutineScope.launch {
-                        val result = loginScreenViewModel.loginUser(email, password)
-                        if (result?.user != null) {
-                            onLoginSuccess()
-                        }
-                    }
 
-                }) {
-                    Text(text = "Login")
-                }
-                OutlinedButton(onClick = {
-                    loginScreenViewModel.registerUser(email, password)
-                }) {
-                    Text(text = "Register")
+            Column(
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                if (!login && !register) {
+                    OutlinedButton(onClick = { login = true }, modifier = Modifier.fillMaxWidth(0.5f).padding(vertical = 8.dp)) {
+                        Text(text = "Login")
+                    }
+                    OutlinedButton(onClick = { register = true }, modifier = Modifier.fillMaxWidth(0.5f)) {
+                        Text(text = "Sign Up")
+                    }
+                } else {
+                OutlinedTextField(
+                    modifier = Modifier
+                        .fillMaxWidth(0.8f)
+                        .padding(vertical = 8.dp),
+                    label = {
+                        Text(text = "E-mail")
+                    },
+                    value = email,
+                    onValueChange = {
+                        email = it
+                    },
+                    singleLine = true,
+                    leadingIcon = {
+                        Icon(Icons.Default.Email, null)
+                    }
+                )
+                OutlinedTextField(
+                    modifier = Modifier
+                        .fillMaxWidth(0.8f)
+                        .padding(vertical = 8.dp),
+                    label = {
+                        Text(text = "Password")
+                    },
+                    value = password,
+                    onValueChange = { password = it },
+                    singleLine = true,
+                    visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
+                    leadingIcon = {
+                        Icon(Icons.Default.Password, null)
+                    },
+                    trailingIcon = {
+                        IconButton(onClick = { showPassword = !showPassword }) {
+                            if (showPassword) {
+                                Icon(Icons.Default.Visibility, null)
+                            } else {
+                                Icon(Icons.Default.VisibilityOff, null)
+                            }
+                        }
+                    }
+                )
+                if (login) {
+
+                    fieldValidationMessage(loginScreenViewModel = loginScreenViewModel)
+                    OutlinedButton(onClick = {
+                        if (email.isEmpty()) {
+                            loginScreenViewModel.loginUiState =
+                                LoginUiState.Error("Please enter an email")
+                            return@OutlinedButton
+                        }
+                        if (password.isEmpty()) {
+                            loginScreenViewModel.loginUiState =
+                                LoginUiState.Error("Please enter a password")
+                            return@OutlinedButton
+                        }
+
+                        coroutineScope.launch {
+                            val result = loginScreenViewModel.loginUser(email, password)
+                            if (result?.user != null) {
+                                onLoginSuccess()
+                            }
+                        }
+
+                    }, modifier = Modifier.padding(top = 32.dp)) {
+                        Text(text = "Login")
+                    }
+                    TextButton(onClick = { register = true; login = false }) {
+                        Text(text = "Need an account? Register here")
+                    }
+                } else if (register) {
+                    var confirmPassword by rememberSaveable { mutableStateOf("") }
+                    OutlinedTextField(
+                        modifier = Modifier
+                            .fillMaxWidth(0.8f)
+                            .padding(vertical = 8.dp),
+                        label = {
+                            Text(text = "Confirm Password")
+                        },
+                        value = confirmPassword,
+                        onValueChange = { confirmPassword = it },
+                        singleLine = true,
+                        visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
+                        leadingIcon = {
+                            Icon(Icons.Default.Password, null)
+                        },
+                        trailingIcon = {
+                            IconButton(onClick = { showPassword = !showPassword }) {
+                                if (showPassword) {
+                                    Icon(Icons.Default.Visibility, null)
+                                } else {
+                                    Icon(Icons.Default.VisibilityOff, null)
+                                }
+                            }
+                        })
+
+                    fieldValidationMessage(loginScreenViewModel = loginScreenViewModel)
+
+                    OutlinedButton(onClick = {
+                        if (email.isEmpty()) {
+                            loginScreenViewModel.loginUiState =
+                                LoginUiState.Error("Please enter an email")
+                            return@OutlinedButton
+                        }
+                        if (password.isEmpty()) {
+                            loginScreenViewModel.loginUiState =
+                                LoginUiState.Error("Please enter a password")
+                            return@OutlinedButton
+                        }
+                        if (confirmPassword.isEmpty()) {
+                            loginScreenViewModel.loginUiState =
+                                LoginUiState.Error("Please confirm your password")
+                            return@OutlinedButton
+                        }
+                        if (password != confirmPassword) {
+                            loginScreenViewModel.loginUiState =
+                                LoginUiState.Error("Passwords do not match")
+                            return@OutlinedButton
+                        }
+                        loginScreenViewModel.registerUser(email, password)
+                    }, modifier = Modifier.padding(top = 32.dp)) {
+                        Text(text = "Register")
+                    }
+                    TextButton(onClick = { register = false; login = true }) {
+                        Text(text = "Already have an account? Login here")
+                    }
                 }
             }
+
+
         }
-        Column(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .padding(bottom = 50.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            when (loginScreenViewModel.loginUiState){
-                is LoginUiState.Init -> {}
-                is LoginUiState.Loading -> CircularProgressIndicator()
-                is LoginUiState.RegisterSuccess -> Text(text = "Registration Success")
-                is LoginUiState.LoginSuccess -> Text(text = "Login Success")
-                is LoginUiState.Error -> Text(text = "Error: ${(loginScreenViewModel.loginUiState as LoginUiState.Error).error}", textAlign = TextAlign.Center)
-            }
+    }
+}
+
+@Composable
+fun fieldValidationMessage(
+    loginScreenViewModel: LoginScreenViewModel
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        when (loginScreenViewModel.loginUiState) {
+            is LoginUiState.Init -> {}
+            is LoginUiState.Loading -> CircularProgressIndicator()
+            is LoginUiState.RegisterSuccess -> Text(text = "Registration Success")
+            is LoginUiState.LoginSuccess -> Text(text = "Login Success")
+            is LoginUiState.Error -> Text(
+                text = "Error: ${(loginScreenViewModel.loginUiState as LoginUiState.Error).error}",
+                textAlign = TextAlign.Center,
+                color = androidx.compose.ui.graphics.Color.Red,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
         }
     }
 }
