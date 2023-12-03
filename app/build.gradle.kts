@@ -4,6 +4,7 @@ plugins {
     id("com.google.gms.google-services")
     id("com.google.devtools.ksp")
     id("kotlin-kapt")
+    id("com.google.dagger.hilt.android")
     id("org.jetbrains.kotlin.plugin.serialization") version "1.8.10"
 }
 
@@ -96,6 +97,9 @@ dependencies {
     implementation("com.google.dagger:hilt-android:2.44")
     kapt("com.google.dagger:hilt-compiler:2.44")
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
+    annotationProcessor("com.google.dagger:hilt-compiler:2.44")
+
+
     implementation ("androidx.compose.material:material-icons-extended:1.5.4")
     implementation("com.google.accompanist:accompanist-permissions:0.33.2-alpha")
 
