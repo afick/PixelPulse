@@ -12,9 +12,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
+import hu.ait.pixelpulse.ui.navigation.Screen
 import hu.ait.pixelpulse.ui.screen.auth.login.LoginScreen
 import hu.ait.pixelpulse.ui.screen.postupload.PostUploadScreen
+import hu.ait.pixelpulse.ui.screen.feed.FeedScreen
 import hu.ait.pixelpulse.ui.theme.PixelPulseTheme
 
 @AndroidEntryPoint
@@ -36,18 +42,31 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
 
-@Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
-    PixelPulseTheme {
-        Greeting("Android")
+fun NavGraph(
+    navController: NavHostController = rememberNavController(),
+) {
+    NavHost(
+        navController = navController,
+        startDestination = Screen.Login.route
+    ) {
+        composable(Screen.Login.route) {
+            LoginScreen(
+                onLoginSuccess = {
+                    navController.navigate(Screen.Feed.route)
+                }
+            )
+        }
+        composable(Screen.Feed.route) {
+            FeedScreen(
+                onNavigateToWritePost = {
+                    navController.navigate(Screen.WritePost.route)
+                }
+            )
+        }
+//        composable(Screen.WritePost.route) {
+//            WritePostScreen()
+//        }
     }
 }
