@@ -18,9 +18,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import hu.ait.pixelpulse.R
 
+@OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.P)
 @Composable
 fun PostUploadScreen () {
@@ -43,6 +49,10 @@ fun PostUploadScreen () {
     var imageUri by remember {
         mutableStateOf<Uri?>(null)
     }
+    var location by rememberSaveable {
+        mutableStateOf("")
+    }
+
     val bitmap = remember { mutableStateOf<Bitmap?>(null) }
 
     val context = LocalContext.current
@@ -55,8 +65,9 @@ fun PostUploadScreen () {
     }
 
     Column (
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = Modifier
+            .fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         imageUri?.let {
             val source = ImageDecoder.createSource(context.contentResolver, imageUri!!)
@@ -70,6 +81,9 @@ fun PostUploadScreen () {
                 modifier = Modifier
                     .size(150.dp)
                     .clickable { launcher.launch("image/*") })
+            Text(text = "Upload Image",
+                modifier = Modifier
+                    .clickable { launcher.launch("image/*") })
         } else {
             AsyncImage(
                 model = imageUri,
@@ -80,22 +94,24 @@ fun PostUploadScreen () {
                 Text(text = "Choose different image")
             }
         }
+        
 
-//        bitmap.value?.let {
-//            btm -> Image(
-//                bitmap = btm.asImageBitmap(),
-//                contentDescription = "Uploaded Image",
-//                modifier = Modifier
-//                    .size(200.dp)
-//                    .padding(10.dp)
-//            )
-//        }
+        OutlinedTextField(value = postCaption, onValueChange = {postCaption = it},
+            label = { Text(text = "Post Caption") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp))
 
-        Spacer(modifier = Modifier.height(12.dp))
-//
-//        Button(onClick = { launcher.launch("image/*") }) {
-//            Text(text = "Upload Image")
-//        }
+        OutlinedTextField(value = location, onValueChange = {location = it},
+            label = { Text(text = "Location") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp))
+
+        Button(onClick = { /*TODO*/ }) {
+            Text(text = "Upload Post")
+        }
+
 
     }
 
