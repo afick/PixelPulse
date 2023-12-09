@@ -6,7 +6,7 @@ data class Post(
     var title: String = "",
     var body: String = "",
     var imgUrl: String = "",
-    var imgMetadata: ImgMetadata
+//    var imgMetadata: ImgMetadata
 )
 
 data class ImgMetadata(
