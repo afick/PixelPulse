@@ -121,17 +121,17 @@ fun PostCard(
                 modifier = Modifier.padding(20.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                ) {
-                    Text(
-                        text = post.title,
-                    )
-                    Text(
-                        text = post.body,
-                    )
-                }
+//                Column(
+//                    modifier = Modifier
+//                        .weight(1f)
+//                ) {
+//                    Text(
+//                        text = post.title,
+//                    )
+//                    Text(
+//                        text = post.body,
+//                    )
+//                }
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {

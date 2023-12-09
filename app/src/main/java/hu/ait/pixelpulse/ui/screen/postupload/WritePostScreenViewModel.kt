@@ -42,15 +42,13 @@ class WritePostScreenViewModel : ViewModel() {
         val myPost = Post(
             uid = auth.currentUser!!.uid,
             author = auth.currentUser!!.email!!,
-            title = title,
-            body = postBody,
+            caption = title,
             imgUrl = imgUrl
         )
         Post(
             uid = auth.currentUser!!.uid,
             author = auth.currentUser!!.email!!,
-            title = title,
-            body = postBody,
+            caption = title,
             imgUrl = imgUrl,
         )
 

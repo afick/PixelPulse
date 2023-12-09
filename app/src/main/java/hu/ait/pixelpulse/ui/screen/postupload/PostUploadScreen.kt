@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -55,7 +56,6 @@ fun PostUploadScreen () {
 
     Column (
         modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         imageUri?.let {
@@ -64,14 +64,17 @@ fun PostUploadScreen () {
         }
 
         if (imageUri == null) {
+            Spacer(modifier = Modifier.height(120.dp))
             Image(painter = painterResource(id = R.drawable.imgupload),
                 contentDescription = "upload image",
-                modifier = Modifier.size(150.dp).clickable { launcher.launch("image/*")  })
+                modifier = Modifier
+                    .size(150.dp)
+                    .clickable { launcher.launch("image/*") })
         } else {
             AsyncImage(
                 model = imageUri,
                 contentDescription = "Uploaded Image",
-                modifier = Modifier.size(150.dp)
+                modifier = Modifier.fillMaxWidth()
             )
             TextButton(onClick = { launcher.launch("image/*") }) {
                 Text(text = "Choose different image")
