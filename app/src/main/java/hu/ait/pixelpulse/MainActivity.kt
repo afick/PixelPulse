@@ -23,6 +23,8 @@ import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import hu.ait.pixelpulse.ui.navigation.BottomNavigationBar
 import hu.ait.pixelpulse.ui.navigation.NavigationItem
+import hu.ait.pixelpulse.ui.navigation.Screen
+import hu.ait.pixelpulse.ui.screen.auth.login.LoginScreen
 import hu.ait.pixelpulse.ui.screen.feed.FeedScreen
 import hu.ait.pixelpulse.ui.screen.postupload.PostUploadScreen
 import hu.ait.pixelpulse.ui.theme.PixelPulseTheme
@@ -80,8 +82,14 @@ fun BottomNavigationBar(navController: NavHostController) {
 fun NavGraph(navController: NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = NavigationItem.Feed.route
+        startDestination = Screen.Login.route
     ) {
+        composable(Screen.Login.route) {
+            LoginScreen(
+                onLoginSuccess = { navController.navigate(NavigationItem.Feed.route) }
+            )
+        }
+
         composable(NavigationItem.Feed.route) {
             FeedScreen(
                 onNavigateToWritePost = {

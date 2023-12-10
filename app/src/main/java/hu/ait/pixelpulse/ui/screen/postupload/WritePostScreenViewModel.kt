@@ -5,12 +5,15 @@ import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -35,7 +38,7 @@ class WritePostScreenViewModel : ViewModel() {
 
     fun uploadPost(
         title: String,
-        postBody: String,
+        location: String,
         imgUrl: String = ""
     ) {
         writePostUiState = WritePostUiState.LoadingPostUpload
@@ -44,13 +47,8 @@ class WritePostScreenViewModel : ViewModel() {
             uid = auth.currentUser!!.uid,
             author = auth.currentUser!!.email!!,
             caption = title,
-            imgUrl = imgUrl
-        )
-        Post(
-            uid = auth.currentUser!!.uid,
-            author = auth.currentUser!!.email!!,
-            caption = title,
             imgUrl = imgUrl,
+            location = location
         )
 
         val postCollection =
@@ -67,8 +65,10 @@ class WritePostScreenViewModel : ViewModel() {
 
     @RequiresApi(Build.VERSION_CODES.P)
     fun uploadPostImage(
-        contentResolver: ContentResolver, imageUri: Uri,
-        title: String, postBody: String
+        contentResolver: ContentResolver,
+        imageUri: Uri,
+        title: String,
+        location: String
     ) {
         viewModelScope.launch {
             writePostUiState = WritePostUiState.LoadingImageUpload
@@ -77,13 +77,14 @@ class WritePostScreenViewModel : ViewModel() {
             val bitmap = ImageDecoder.decodeBitmap(source)
 
             val baos = ByteArrayOutputStream()
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+            bitmap?.compress(Bitmap.CompressFormat.JPEG, 100, baos)
             val imageInBytes = baos.toByteArray()
 
             // prepare the empty file in the cloud
             val storageRef = FirebaseStorage.getInstance().reference
             val newImage = URLEncoder.encode(
-                UUID.randomUUID().toString(), "UTF-8") + ".jpg"
+                UUID.randomUUID().toString(), "UTF-8"
+            ) + ".jpg"
             val newImagesRef = storageRef.child("images/$newImage")
 
             // upload the jpeg byte array to the created empty file
@@ -91,24 +92,31 @@ class WritePostScreenViewModel : ViewModel() {
                 .addOnFailureListener { e ->
                     writePostUiState =
                         WritePostUiState.ErrorDuringImageUpload(e.message)
+                    Log.d("upload error", "uploadPostImage: $e")
                 }.addOnSuccessListener {
                     writePostUiState = WritePostUiState.ImageUploadSuccess
 
-                    newImagesRef.downloadUrl.addOnCompleteListener { task -> // the public URL of the image is: task.result.toString()
-                        uploadPost(title, postBody, task.result.toString())
-                    }
+
+                    newImagesRef.downloadUrl.addOnCompleteListener(
+                        object : OnCompleteListener<Uri> {
+                            override fun onComplete(task: Task<Uri>) {
+                                // the public URL of the image is: task.result.toString()
+                                uploadPost(title, location, task.result.toString())
+                            }
+                        })
                 }
         }
     }
-
-    interface WritePostUiState {
-        object Init : WritePostUiState
-        object LoadingPostUpload : WritePostUiState
-        object PostUploadSuccess : WritePostUiState
-        data class ErrorDuringPostUpload(val error: String?) : WritePostUiState
-        object LoadingImageUpload : WritePostUiState
-        data class ErrorDuringImageUpload(val error: String?) : WritePostUiState
-        object ImageUploadSuccess : WritePostUiState
-        object NavigateToNextScreen : WritePostUiState
-    }
 }
+
+interface WritePostUiState {
+    object Init : WritePostUiState
+    object LoadingPostUpload : WritePostUiState
+    object PostUploadSuccess : WritePostUiState
+    data class ErrorDuringPostUpload(val error: String?) : WritePostUiState
+    object LoadingImageUpload : WritePostUiState
+    data class ErrorDuringImageUpload(val error: String?) : WritePostUiState
+    object ImageUploadSuccess : WritePostUiState
+    object NavigateToNextScreen : WritePostUiState
+}
+

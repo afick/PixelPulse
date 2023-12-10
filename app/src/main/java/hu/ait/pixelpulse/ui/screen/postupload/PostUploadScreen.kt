@@ -110,9 +110,7 @@ fun PostUploadScreen (
                 .padding(12.dp)
         )
         Button(onClick = {
-            if (imageUri == null) {
-                viewModel.uploadPost(postCaption, location)
-            } else {
+            if (imageUri != null) {
                 viewModel
                     .uploadPostImage(
                         context.contentResolver,
@@ -126,21 +124,21 @@ fun PostUploadScreen (
         }
 
         when (viewModel.writePostUiState) {
-            is WritePostScreenViewModel.WritePostUiState.LoadingPostUpload -> CircularProgressIndicator()
-            is WritePostScreenViewModel.WritePostUiState.PostUploadSuccess -> {
+            is WritePostUiState.LoadingPostUpload -> CircularProgressIndicator()
+            is WritePostUiState.PostUploadSuccess -> {
                 Text(text = "Post uploaded.")
             }
-            is WritePostScreenViewModel.WritePostUiState.ErrorDuringPostUpload ->
+            is WritePostUiState.ErrorDuringPostUpload ->
                 Text(text =
-                "${(viewModel.writePostUiState as WritePostScreenViewModel.WritePostUiState.ErrorDuringPostUpload).error}")
+                "${(viewModel.writePostUiState as WritePostUiState.ErrorDuringPostUpload).error}")
 
-            is WritePostScreenViewModel.WritePostUiState.LoadingImageUpload -> CircularProgressIndicator()
-            is WritePostScreenViewModel.WritePostUiState.ImageUploadSuccess -> {
+            is WritePostUiState.LoadingImageUpload -> CircularProgressIndicator()
+            is WritePostUiState.ImageUploadSuccess -> {
                 Text(text = "Image uploaded, starting post upload.")
             }
-            is WritePostScreenViewModel.WritePostUiState.ErrorDuringImageUpload ->
-                Text(text = "${(viewModel.writePostUiState as WritePostScreenViewModel.WritePostUiState.ErrorDuringImageUpload).error}")
-            is WritePostScreenViewModel.WritePostUiState.NavigateToNextScreen -> {
+            is WritePostUiState.ErrorDuringImageUpload ->
+                Text(text = "${(viewModel.writePostUiState as WritePostUiState.ErrorDuringImageUpload).error}")
+            is WritePostUiState.NavigateToNextScreen -> {
                 navController.navigateUp()
             }
             else -> {}
