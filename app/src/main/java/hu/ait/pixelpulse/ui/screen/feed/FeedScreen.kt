@@ -12,11 +12,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -46,7 +44,7 @@ fun FeedScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("AIT Forum") },
+                title = { Text("Pixel Pulse") },
                 colors = TopAppBarDefaults.smallTopAppBarColors(
                     containerColor =
                     MaterialTheme.colorScheme.secondaryContainer
@@ -59,21 +57,6 @@ fun FeedScreen(
                     }
                 }
             )
-        },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    onNavigateToWritePost()
-                },
-                containerColor = MaterialTheme.colorScheme.secondary,
-                shape = RoundedCornerShape(16.dp),
-            ) {
-                Icon(
-                    imageVector = Icons.Rounded.Add,
-                    contentDescription = "Add",
-                    tint = Color.White,
-                )
-            }
         }
     ) {
         Column(modifier = Modifier.padding(it)) {
@@ -135,7 +118,7 @@ fun PostCard(
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if (currentUserId.equals(post.uid)) {
+                    if (currentUserId == post.uid) {
                         Icon(
                             imageVector = Icons.Filled.Delete,
                             contentDescription = "Delete",

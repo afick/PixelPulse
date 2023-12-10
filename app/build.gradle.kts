@@ -97,7 +97,7 @@ dependencies {
 
     implementation("com.google.dagger:hilt-android:2.44")
     kapt("com.google.dagger:hilt-compiler:2.44")
-    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
+    implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
     annotationProcessor("com.google.dagger:hilt-compiler:2.44")
 
 
@@ -107,7 +107,11 @@ dependencies {
     // Location Permissions
     implementation("com.google.android.gms:play-services-location:21.0.1")
     implementation("com.google.accompanist:accompanist-permissions:0.33.2-alpha")
+    implementation("androidx.navigation:navigation-compose:2.7.5")
 
+    implementation("androidx.compose.ui:ui:1.5.4")
+    implementation("androidx.compose.material:material:1.5.4")
+    implementation("androidx.navigation:navigation-compose:2.7.5")
 }
 
 // Allow references to generated code
