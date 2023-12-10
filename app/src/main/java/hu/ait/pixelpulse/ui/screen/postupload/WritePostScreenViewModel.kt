@@ -23,16 +23,17 @@ import java.net.URLEncoder
 import java.util.UUID
 
 class WritePostScreenViewModel : ViewModel() {
+
     companion object {
         const val COLLECTION_POSTS = "posts"
     }
 
-    private var writePostUiState: WritePostUiState
+    var writePostUiState: WritePostUiState
             by mutableStateOf(WritePostUiState.Init)
 
     private var auth: FirebaseAuth = Firebase.auth
 
-    private fun uploadPost(
+    fun uploadPost(
         title: String,
         postBody: String,
         imgUrl: String = ""
@@ -58,7 +59,7 @@ class WritePostScreenViewModel : ViewModel() {
             )
 
         postCollection.add(myPost).addOnSuccessListener {
-            writePostUiState = WritePostUiState.PostUploadSuccess
+            writePostUiState = WritePostUiState.NavigateToNextScreen
         }.addOnFailureListener {
             writePostUiState = WritePostUiState.ErrorDuringPostUpload(it.message)
         }
@@ -101,15 +102,15 @@ class WritePostScreenViewModel : ViewModel() {
         }
     }
 
-}
 
-
-sealed interface WritePostUiState {
-    object Init : WritePostUiState
-    object LoadingPostUpload : WritePostUiState
-    object PostUploadSuccess : WritePostUiState
-    data class ErrorDuringPostUpload(val error: String?) : WritePostUiState
-    object LoadingImageUpload : WritePostUiState
-    data class ErrorDuringImageUpload(val error: String?) : WritePostUiState
-    object ImageUploadSuccess : WritePostUiState
+    interface WritePostUiState {
+        object Init : WritePostUiState
+        object LoadingPostUpload : WritePostUiState
+        object PostUploadSuccess : WritePostUiState
+        data class ErrorDuringPostUpload(val error: String?) : WritePostUiState
+        object LoadingImageUpload : WritePostUiState
+        data class ErrorDuringImageUpload(val error: String?) : WritePostUiState
+        object ImageUploadSuccess : WritePostUiState
+        object NavigateToNextScreen : WritePostUiState
+    }
 }

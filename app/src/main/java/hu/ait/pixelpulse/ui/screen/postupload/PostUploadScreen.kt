@@ -1,5 +1,6 @@
 package hu.ait.pixelpulse.ui.screen.postupload
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.net.Uri
@@ -9,8 +10,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,14 +17,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,17 +31,23 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.core.content.FileProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import hu.ait.pixelpulse.R
+import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.P)
 @Composable
-fun PostUploadScreen () {
+fun PostUploadScreen (
+    viewModel: WritePostScreenViewModel = viewModel(),
+    navController: NavController
+) {
     var postCaption by rememberSaveable { mutableStateOf("") }
     var imageUri by remember {
         mutableStateOf<Uri?>(null)
@@ -94,31 +97,75 @@ fun PostUploadScreen () {
                 Text(text = "Choose different image")
             }
         }
-        
-
         OutlinedTextField(value = postCaption, onValueChange = {postCaption = it},
             label = { Text(text = "Post Caption") },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 12.dp))
-
+                .padding(horizontal = 12.dp)
+        )
         OutlinedTextField(value = location, onValueChange = {location = it},
             label = { Text(text = "Location") },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp))
-
-        Button(onClick = { /*TODO*/ }) {
+                .padding(12.dp)
+        )
+        Button(onClick = {
+            if (imageUri == null) {
+                viewModel.uploadPost(postCaption, location)
+            } else {
+                viewModel
+                    .uploadPostImage(
+                        context.contentResolver,
+                        imageUri!!,
+                        postCaption,
+                        location
+                    )
+            }
+        }) {
             Text(text = "Upload Post")
         }
 
+        when (viewModel.writePostUiState) {
+            is WritePostScreenViewModel.WritePostUiState.LoadingPostUpload -> CircularProgressIndicator()
+            is WritePostScreenViewModel.WritePostUiState.PostUploadSuccess -> {
+                Text(text = "Post uploaded.")
+            }
+            is WritePostScreenViewModel.WritePostUiState.ErrorDuringPostUpload ->
+                Text(text =
+                "${(viewModel.writePostUiState as WritePostScreenViewModel.WritePostUiState.ErrorDuringPostUpload).error}")
 
+            is WritePostScreenViewModel.WritePostUiState.LoadingImageUpload -> CircularProgressIndicator()
+            is WritePostScreenViewModel.WritePostUiState.ImageUploadSuccess -> {
+                Text(text = "Image uploaded, starting post upload.")
+            }
+            is WritePostScreenViewModel.WritePostUiState.ErrorDuringImageUpload ->
+                Text(text = "${(viewModel.writePostUiState as WritePostScreenViewModel.WritePostUiState.ErrorDuringImageUpload).error}")
+            is WritePostScreenViewModel.WritePostUiState.NavigateToNextScreen -> {
+                navController.navigateUp()
+            }
+            else -> {}
+        }
     }
+}
 
-
-
-
-
-
-
+class ComposeFileProvider : FileProvider(
+    R.xml.filepaths
+) {
+    companion object {
+        fun getImageUri(context: Context): Uri {
+            val directory = File(context.cacheDir, "images")
+            directory.mkdirs()
+            val file = File.createTempFile(
+                "selected_image_",
+                ".jpg",
+                directory,
+            )
+            val authority = context.packageName + ".fileprovider"
+            return getUriForFile(
+                context,
+                authority,
+                file,
+            )
+        }
+    }
 }
