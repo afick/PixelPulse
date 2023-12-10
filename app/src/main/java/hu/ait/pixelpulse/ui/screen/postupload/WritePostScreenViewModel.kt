@@ -65,7 +65,6 @@ class WritePostScreenViewModel : ViewModel() {
         }
     }
 
-
     @RequiresApi(Build.VERSION_CODES.P)
     fun uploadPostImage(
         contentResolver: ContentResolver, imageUri: Uri,
@@ -101,7 +100,6 @@ class WritePostScreenViewModel : ViewModel() {
                 }
         }
     }
-
 
     interface WritePostUiState {
         object Init : WritePostUiState
