@@ -64,13 +64,10 @@ fun FeedScreen(
             } else if (postListState.value is MainScreenUIState.Success) {
                 LazyColumn {
                     items((postListState.value as MainScreenUIState.Success).postList) { postItem ->
-                        val userEmail = feedScreenViewModel.getUserEmailByUid(postItem.post.uid)
-
                         PostCard(
                             post = postItem.post,
-                            userEmail = userEmail.value,
                             onRemoveItem = { feedScreenViewModel.deletePost(postItem.postId) },
-                            currentUserId = feedScreenViewModel.currentUserId
+                            currentUserId = postItem.post.author
                         )
                     }
                 }
@@ -82,7 +79,6 @@ fun FeedScreen(
 @Composable
 fun PostCard(
     post: Post,
-    userEmail: String?,
     onRemoveItem: () -> Unit,
     currentUserId: String
 ) {
@@ -94,7 +90,7 @@ fun PostCard(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = userEmail ?: "Unknown",
+                text = currentUserId,
                 modifier = Modifier.padding(end = 8.dp)
             )
             if (currentUserId == post.uid) {
