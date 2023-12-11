@@ -15,12 +15,6 @@ class FeedScreenViewModel : ViewModel() {
         currentUserId = Firebase.auth.currentUser!!.uid
     }
 
-    fun deletePost(postKey: String) {
-        FirebaseFirestore.getInstance().collection(
-            WritePostScreenViewModel.COLLECTION_POSTS
-        ).document(postKey).delete()
-    }
-
     fun postsList() = callbackFlow {
         val snapshotListener =
             FirebaseFirestore.getInstance().collection(WritePostScreenViewModel.COLLECTION_POSTS)

@@ -8,10 +8,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 
 sealed class Screen(val route: String) {
     object Login : Screen("login")
-    object Feed : Screen("feed")
-    object WritePost : Screen("writepost")
-    object Profile : Screen("profile")
-    object OtherProfile : Screen("otherprofile")
 }
 
 enum class NavigationItem(val route: String, val icon: ImageVector, val title: String) {
