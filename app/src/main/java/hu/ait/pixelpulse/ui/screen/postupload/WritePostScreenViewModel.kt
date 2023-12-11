@@ -57,6 +57,7 @@ class WritePostScreenViewModel : ViewModel() {
         val myPost = Post(
             uid = randomUUID().toString(),
             author = author!!,
+            authorId = auth.currentUser!!.uid,
             caption = title,
             imgUrl = imgUrl,
             location = location,

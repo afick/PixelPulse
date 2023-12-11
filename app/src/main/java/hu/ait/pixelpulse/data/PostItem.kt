@@ -2,6 +2,7 @@ package hu.ait.pixelpulse.data
 
 data class Post(
     var uid: String = "",
+    var authorId: String = "",
     var author: String = "",
     var caption: String = "",
     var imgUrl: String = "",
