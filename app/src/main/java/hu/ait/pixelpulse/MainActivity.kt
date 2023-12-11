@@ -32,7 +32,7 @@ import hu.ait.pixelpulse.ui.screen.auth.login.LoginScreen
 import hu.ait.pixelpulse.ui.screen.feed.FeedScreen
 import hu.ait.pixelpulse.ui.screen.postupload.PostUploadScreen
 import hu.ait.pixelpulse.ui.screen.profile.UserProfile
-import hu.ait.pixelpulse.ui.theme.PixelPulseTheme
+import hu.ait.pixelpulse.ui.theme.AppTheme
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -42,7 +42,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            PixelPulseTheme {
+            AppTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background

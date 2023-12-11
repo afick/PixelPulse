@@ -7,6 +7,7 @@ import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.navigation.NavHostController
@@ -22,6 +23,8 @@ fun BottomNavigationBar(
         exit = slideOutVertically(targetOffsetY = { it }),
         content = {
             BottomNavigation(
+                backgroundColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                contentColor = MaterialTheme.colorScheme.tertiaryContainer,
             ) {
                 val currentRoute = navController.currentDestination?.route
                 NavigationItem.values().forEach { item ->

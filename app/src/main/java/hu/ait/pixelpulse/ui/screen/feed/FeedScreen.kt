@@ -42,7 +42,9 @@ fun FeedScreen(
                 },
                 colors = TopAppBarDefaults.smallTopAppBarColors(
                     containerColor =
-                    MaterialTheme.colorScheme.secondaryContainer
+                    MaterialTheme.colorScheme.onTertiaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.tertiaryContainer,
+                    actionIconContentColor = MaterialTheme.colorScheme.tertiaryContainer
                 )
             )
         },

@@ -93,7 +93,10 @@ fun UserProfile(
             )
         },
             colors = TopAppBarDefaults.smallTopAppBarColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer
+                containerColor =
+                MaterialTheme.colorScheme.onTertiaryContainer,
+                titleContentColor = MaterialTheme.colorScheme.tertiaryContainer,
+                actionIconContentColor = MaterialTheme.colorScheme.tertiaryContainer
             ),
             actions = {
                 IconButton(onClick = { editing = !editing }) {
