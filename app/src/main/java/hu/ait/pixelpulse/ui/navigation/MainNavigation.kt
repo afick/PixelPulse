@@ -17,5 +17,5 @@ sealed class Screen(val route: String) {
 enum class NavigationItem(val route: String, val icon: ImageVector, val title: String) {
     Feed("feed", Icons.Filled.Home, "Feed"),
     Post("post", Icons.Filled.Add, "Post"),
-    Profile("profile", Icons.Filled.Person, "Profile"),
+    UserProfile("profile", Icons.Filled.Person, "Profile"),
 }

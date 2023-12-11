@@ -91,11 +91,7 @@ fun NavGraph(navController: NavHostController) {
         }
 
         composable(NavigationItem.Feed.route) {
-            FeedScreen(
-                onNavigateToWritePost = {
-                    navController.navigate(NavigationItem.Post.route)
-                }
-            )
+            FeedScreen()
         }
         composable(NavigationItem.Post.route) {
             PostUploadScreen(navController = navController)
