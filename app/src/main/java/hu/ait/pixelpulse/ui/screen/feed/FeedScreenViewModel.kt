@@ -1,6 +1,4 @@
 package hu.ait.pixelpulse.ui.screen.feed
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -15,34 +13,6 @@ class FeedScreenViewModel : ViewModel() {
     var currentUserId: String
     init {
         currentUserId = Firebase.auth.currentUser!!.uid
-    }
-
-
-    private val db = FirebaseFirestore.getInstance()
-
-    fun getUserEmailByUid(uid: String): LiveData<String> {
-        val emailLiveData = MutableLiveData<String>()
-
-        // Assuming 'users' is your collection where user data is stored
-        db.collection("users").document(uid).get()
-            .addOnSuccessListener { document ->
-                if (document != null && document.exists()) {
-                    // Assuming 'email' is the field where the user's email is stored
-                    val email = document.getString("email")
-                    email?.let {
-                        emailLiveData.value = it
-                    }
-                } else {
-                    // Handle the case where the user doesn't exist
-                    emailLiveData.value = "Email not found"
-                }
-            }
-            .addOnFailureListener {
-                // Handle any errors here
-                emailLiveData.value = "Error fetching email"
-            }
-
-        return emailLiveData
     }
 
     fun deletePost(postKey: String) {
