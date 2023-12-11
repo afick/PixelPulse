@@ -27,6 +27,7 @@ import hu.ait.pixelpulse.ui.navigation.Screen
 import hu.ait.pixelpulse.ui.screen.auth.login.LoginScreen
 import hu.ait.pixelpulse.ui.screen.feed.FeedScreen
 import hu.ait.pixelpulse.ui.screen.postupload.PostUploadScreen
+import hu.ait.pixelpulse.ui.screen.profile.UserProfile
 import hu.ait.pixelpulse.ui.theme.PixelPulseTheme
 
 @AndroidEntryPoint
@@ -95,6 +96,10 @@ fun NavGraph(navController: NavHostController) {
         }
         composable(NavigationItem.Post.route) {
             PostUploadScreen(navController = navController)
+        }
+
+        composable(NavigationItem.UserProfile.route) {
+            UserProfile()
         }
         // Add other destinations as needed
     }

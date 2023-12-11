@@ -22,10 +22,13 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import hu.ait.pixelpulse.data.Post
@@ -46,28 +49,21 @@ fun FeedScreen(
                 colors = TopAppBarDefaults.smallTopAppBarColors(
                     containerColor =
                     MaterialTheme.colorScheme.secondaryContainer
-                ),
-                actions = {
-                    IconButton(
-                        onClick = { }
-                    ) {
-                        Icon(Icons.Filled.Info, contentDescription = "Info")
-                    }
-                }
+                )
             )
-        }
+        },
+        modifier = Modifier.padding(bottom = 56.dp)
     ) {
         Column(modifier = Modifier.padding(it)) {
 
             if (postListState.value == MainScreenUIState.Init) {
-                Text(text = "Init...")
+                Text(text = "Loading...")
             } else if (postListState.value is MainScreenUIState.Success) {
                 LazyColumn {
                     items((postListState.value as MainScreenUIState.Success).postList) { postItem ->
                         PostCard(
                             post = postItem.post,
-                            onRemoveItem = { feedScreenViewModel.deletePost(postItem.postId) },
-                            currentUserId = postItem.post.author
+                            onRemoveItem = { feedScreenViewModel.deletePost(postItem.postId) }
                         )
                     }
                 }
@@ -79,33 +75,37 @@ fun FeedScreen(
 @Composable
 fun PostCard(
     post: Post,
-    onRemoveItem: () -> Unit,
-    currentUserId: String
+    onRemoveItem: () -> Unit
 ) {
     Column {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 8.dp, vertical = 4.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.Bottom
         ) {
-            Text(
-                text = currentUserId,
-                modifier = Modifier.padding(end = 8.dp)
-            )
-            if (currentUserId == post.uid) {
-                IconButton(
-                    onClick = { onRemoveItem() },
-                    modifier = Modifier
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Close,
-                        contentDescription = "Delete",
-                        tint = Color.Red
-                    )
-                }
+            Column (
+                modifier = Modifier.padding(8.dp),
+                horizontalAlignment = Alignment.Start
+            ) {
+                Text(
+                    text = post.author, fontWeight = FontWeight.Medium,
+                    fontSize = 20.sp
+                )
+                Text(text = post.location)
+            }
+            Column (
+                horizontalAlignment = Alignment.End
+            ){
+                Text(text = post.camera, fontWeight = FontWeight.Medium)
+                Text(text = "SS: ${post.shutterSpeed}")
+                Text(text = "ISO: ${post.iso}")
+                Text(text = "Aperture: ${post.aperture}")
             }
         }
+
+
 
         // Display the image
         if (post.imgUrl != "") {

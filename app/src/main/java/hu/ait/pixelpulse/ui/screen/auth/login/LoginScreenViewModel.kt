@@ -17,6 +17,9 @@ class LoginScreenViewModel : ViewModel() {
 
     init {
         auth = Firebase.auth
+        if (auth.currentUser != null) {
+            loginUiState = LoginUiState.LoginSuccess
+        }
     }
 
     fun registerUser(email: String, password: String) {

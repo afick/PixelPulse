@@ -66,6 +66,9 @@ fun LoginScreen(
         mutableStateOf(false)
     }
 
+    if (loginScreenViewModel.loginUiState is LoginUiState.LoginSuccess) {
+        onLoginSuccess()
+    }
 
     Box() {
         Text(
