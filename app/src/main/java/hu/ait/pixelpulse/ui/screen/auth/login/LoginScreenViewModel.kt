@@ -37,7 +37,7 @@ class LoginScreenViewModel : ViewModel() {
         }
     }
 
-    suspend fun loginUser(email: String, password: String) : AuthResult? {
+    suspend fun loginUser(email: String, password: String): AuthResult? {
         loginUiState = LoginUiState.Loading
 
         return try {

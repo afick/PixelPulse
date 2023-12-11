@@ -21,9 +21,7 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import hu.ait.pixelpulse.data.Post
 import hu.ait.pixelpulse.data.PostWithId
-import hu.ait.pixelpulse.ui.screen.feed.MainScreenUIState
 import hu.ait.pixelpulse.ui.screen.postupload.WritePostScreenViewModel
-import hu.ait.pixelpulse.ui.screen.postupload.WritePostUiState
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.launch
@@ -79,14 +77,26 @@ class ProfileViewModel : ViewModel() {
                                 postWithIdList.add(PostWithId(snapshot.documents[index].id, post))
                             }
 
-                            Log.d("posts", auth.currentUser!!.uid )
+                            Log.d("posts", auth.currentUser!!.uid)
 
-                            postList.retainAll {
-                                post -> post.authorId == auth.currentUser!!.uid
+                            // Create a copy of the list before applying retainAll
+                            val postsForCurrentUser = postList.toList().filter { post ->
+                                post.authorId == auth.currentUser!!.uid
                             }
 
+//
+//                            postList.retainAll {
+//                                post -> post.authorId == auth.currentUser!!.uid
+//                            }
+
                             ProfileUIState.Success(
-                                postWithIdList
+                                postsForCurrentUser.map {
+                                    PostWithId(
+                                        snapshot.documents[postList.indexOf(
+                                            it
+                                        )].id, it
+                                    )
+                                }
                             )
                         } else {
                             ProfileUIState.Error(e?.message.toString())
@@ -149,7 +159,6 @@ class ProfileViewModel : ViewModel() {
         }
     }
 }
-
 
 
 sealed interface ProfileUIState {

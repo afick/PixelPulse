@@ -41,10 +41,10 @@ class WritePostScreenViewModel : ViewModel() {
         title: String,
         location: String,
         imgUrl: String = "",
-        camera : String,
-        shutterSpeed : String,
-        iso : String,
-        aperture : String
+        camera: String,
+        shutterSpeed: String,
+        iso: String,
+        aperture: String
     ) {
         writePostUiState = WritePostUiState.LoadingPostUpload
 
@@ -85,10 +85,10 @@ class WritePostScreenViewModel : ViewModel() {
         imageUri: Uri,
         title: String,
         location: String,
-        camera : String,
-        shutterSpeed : String,
-        iso : String,
-        aperture : String
+        camera: String,
+        shutterSpeed: String,
+        iso: String,
+        aperture: String
     ) {
         viewModelScope.launch {
             writePostUiState = WritePostUiState.LoadingImageUpload
@@ -121,7 +121,15 @@ class WritePostScreenViewModel : ViewModel() {
                         object : OnCompleteListener<Uri> {
                             override fun onComplete(task: Task<Uri>) {
                                 // the public URL of the image is: task.result.toString()
-                                uploadPost(title, location, task.result.toString(), camera, shutterSpeed, iso, aperture)
+                                uploadPost(
+                                    title,
+                                    location,
+                                    task.result.toString(),
+                                    camera,
+                                    shutterSpeed,
+                                    iso,
+                                    aperture
+                                )
                             }
                         })
                 }

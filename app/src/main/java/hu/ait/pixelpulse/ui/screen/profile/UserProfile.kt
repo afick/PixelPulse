@@ -1,6 +1,5 @@
 package hu.ait.pixelpulse.ui.screen.profile
 
-import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -8,12 +7,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -23,14 +20,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -38,31 +33,25 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import hu.ait.pixelpulse.R
-import hu.ait.pixelpulse.data.Post
-import hu.ait.pixelpulse.ui.screen.feed.MainScreenUIState
-import hu.ait.pixelpulse.ui.screen.feed.PostCard
+import hu.ait.pixelpulse.ui.screen.PostCard
 
 @RequiresApi(Build.VERSION_CODES.P)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserProfile(
-    profileViewModel: ProfileViewModel = ProfileViewModel()
+    profileViewModel: ProfileViewModel = ProfileViewModel(),
 ) {
 
     var editing by remember {
@@ -97,7 +86,12 @@ fun UserProfile(
     Column(
         modifier = Modifier.padding(bottom = 56.dp)
     ) {
-        TopAppBar(title = { Text(text = stringResource(R.string.profile_txt)) },
+        TopAppBar(title = {
+            Text(
+                text = stringResource(R.string.profile_txt),
+                fontWeight = FontWeight.SemiBold
+            )
+        },
             colors = TopAppBarDefaults.smallTopAppBarColors(
                 containerColor = MaterialTheme.colorScheme.secondaryContainer
             ),
@@ -127,21 +121,20 @@ fun UserProfile(
                 Spacer(modifier = Modifier.fillMaxWidth(0.5f))
                 Box(modifier = if (editing) Modifier.clickable {
 
-                        launcher.launch("image/*")
-                        newImage = true
+                    launcher.launch("image/*")
+                    newImage = true
 
                 } else Modifier) {
-                    if (newImage) {
+                    if (newImage && imageUri != null) {
                         AsyncImage(
                             model = imageUri.toString(),
                             contentDescription = "Profile Picture",
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
                                 .size(100.dp)
-                                .clip(CircleShape)
-                                ,
+                                .clip(CircleShape),
 
-                        )
+                            )
                     } else if (image != "null") {
                         AsyncImage(
                             model = image,
@@ -166,15 +159,19 @@ fun UserProfile(
                 }
             }
             if (editing) {
-                Button(onClick = {
-                    profileViewModel.updateDisplayName(displayName)
-                    if (newImage) {
-                        profileViewModel.updateProfilePic(context.contentResolver, imageUri!!)
-                        image = imageUri.toString()
-                    }
-                    editing = false
-                },
-                    modifier = Modifier.align(Alignment.CenterHorizontally)) {
+                Button(
+                    onClick = {
+                        profileViewModel.updateDisplayName(displayName)
+                        if (imageUri == null)
+                            newImage = false
+                        if (newImage) {
+                            profileViewModel.updateProfilePic(context.contentResolver, imageUri!!)
+                            image = imageUri.toString()
+                        }
+                        editing = false
+                    },
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                ) {
                     Text(text = stringResource(R.string.save_changes_btn))
                 }
             }
@@ -182,12 +179,20 @@ fun UserProfile(
         if (postListState.value == ProfileUIState.Init) {
             Text(text = stringResource(R.string.no_posts_yet))
         } else if (postListState.value is ProfileUIState.Success) {
+            if ((postListState.value as ProfileUIState.Success).postList.isEmpty()) {
+                Text(
+                    text = stringResource(R.string.no_posts_yet),
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
+            }
             LazyColumn {
                 items((postListState.value as ProfileUIState.Success).postList) { postItem ->
-                    ProfilePostCard(
+                    PostCard(
                         post = postItem.post,
                         onRemoveItem = { profileViewModel.deletePost(postItem.postId) },
+                        removable = true
                     )
+
                 }
             }
         }
@@ -196,70 +201,3 @@ fun UserProfile(
 
 }
 
-
-@Composable
-fun ProfilePostCard(
-    post: Post,
-    onRemoveItem: () -> Unit
-) {
-    val context = LocalContext.current
-
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp, vertical = 4.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Bottom
-        ) {
-            Column (
-                modifier = Modifier.padding(8.dp),
-                horizontalAlignment = Alignment.Start
-            ) {
-                Text(
-                    text = post.author, fontWeight = FontWeight.Medium,
-                    fontSize = 20.sp
-                )
-                Text(text = post.location,
-                    modifier = Modifier.clickable {
-                        val gmmIntentUri =
-                            Uri.parse("geo:0,0?q=${post.location}")
-                        val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
-                        mapIntent.setPackage("com.google.android.apps.maps")
-                        context.startActivity(mapIntent)
-                    })
-            }
-            Column (
-                horizontalAlignment = Alignment.End
-            ){
-                Text(text = post.camera, fontWeight = FontWeight.Medium)
-                Text(text = stringResource(R.string.ss_txt, post.shutterSpeed))
-                Text(text = stringResource(R.string.iso_txt, post.iso))
-                Text(text = stringResource(R.string.aperture_txt, post.aperture))
-            }
-        }
-
-
-
-        // Display the image
-        if (post.imgUrl != "") {
-            AsyncImage(
-                model = post.imgUrl,
-                contentDescription = "selected image",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1f),
-                contentScale = ContentScale.Crop
-            )
-        }
-        TextButton(onClick = { onRemoveItem() },
-            colors = ButtonDefaults.textButtonColors(
-                contentColor = MaterialTheme.colorScheme.error
-            )) {
-            Text(text = stringResource(R.string.delete_post_btn))
-        }
-    }
-
-}

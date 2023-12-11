@@ -1,4 +1,5 @@
 package hu.ait.pixelpulse.ui.screen.feed
+
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -11,6 +12,7 @@ import kotlinx.coroutines.flow.callbackFlow
 
 class FeedScreenViewModel : ViewModel() {
     var currentUserId: String
+
     init {
         currentUserId = Firebase.auth.currentUser!!.uid
     }

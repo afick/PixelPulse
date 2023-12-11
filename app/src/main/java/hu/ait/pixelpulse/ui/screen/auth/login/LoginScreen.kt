@@ -32,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
@@ -60,7 +61,9 @@ fun LoginScreen(
         mutableStateOf("")
     }
 
-    if (loginScreenViewModel.loginUiState is LoginUiState.LoginSuccess) {
+    if (loginScreenViewModel.loginUiState is LoginUiState.LoginSuccess ||
+        loginScreenViewModel.loginUiState is LoginUiState.RegisterSuccess
+    ) {
         onLoginSuccess()
     }
 
@@ -70,7 +73,7 @@ fun LoginScreen(
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .padding(top = 50.dp),
-            fontSize = 30.sp
+            fontSize = 30.sp, fontWeight = FontWeight.SemiBold
         )
 
         Column(
@@ -164,7 +167,11 @@ fun LoginScreen(
                     }, modifier = Modifier.padding(top = 32.dp)) {
                         Text(text = stringResource(R.string.login_txt))
                     }
-                    TextButton(onClick = { register = true; login = false }) {
+                    TextButton(onClick = {
+                        register = true
+                        login = false
+                        loginScreenViewModel.loginUiState = LoginUiState.Init
+                    }) {
                         Text(text = stringResource(R.string.need_an_account_register_here))
                     }
                 } else if (register) {
@@ -224,7 +231,12 @@ fun LoginScreen(
                     }, modifier = Modifier.padding(top = 32.dp)) {
                         Text(text = stringResource(R.string.register_txt))
                     }
-                    TextButton(onClick = { register = false; login = true }) {
+                    TextButton(onClick = {
+                        register = false;
+                        login = true
+                        loginScreenViewModel.loginUiState = LoginUiState.Init
+
+                    }) {
                         Text(text = stringResource(R.string.already_have_an_account_login_here))
                     }
                     FieldValidationMessage(loginScreenViewModel = loginScreenViewModel)

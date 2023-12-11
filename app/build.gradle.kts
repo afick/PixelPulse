@@ -101,7 +101,7 @@ dependencies {
     annotationProcessor("com.google.dagger:hilt-compiler:2.44")
 
 
-    implementation ("androidx.compose.material:material-icons-extended:1.5.4")
+    implementation("androidx.compose.material:material-icons-extended:1.5.4")
     implementation("com.google.accompanist:accompanist-permissions:0.33.2-alpha")
 
     // Location Permissions

@@ -12,35 +12,37 @@ import androidx.compose.runtime.MutableState
 import androidx.navigation.NavHostController
 
 @Composable
-fun BottomNavigationBar(navController: NavHostController,
-                        bottomBarState: MutableState<Boolean>
+fun BottomNavigationBar(
+    navController: NavHostController,
+    bottomBarState: MutableState<Boolean>
 ) {
     AnimatedVisibility(
         visible = bottomBarState.value,
         enter = slideInVertically(initialOffsetY = { it }),
         exit = slideOutVertically(targetOffsetY = { it }),
         content = {
-    BottomNavigation(
-    ) {
-        val currentRoute = navController.currentDestination?.route
-        NavigationItem.values().forEach { item ->
-            BottomNavigationItem(
-                icon = {
-                    Icon(
-                        imageVector = item.icon,
-                        contentDescription = null
+            BottomNavigation(
+            ) {
+                val currentRoute = navController.currentDestination?.route
+                NavigationItem.values().forEach { item ->
+                    BottomNavigationItem(
+                        icon = {
+                            Icon(
+                                imageVector = item.icon,
+                                contentDescription = null
+                            )
+                        },
+                        label = { Text(item.title) },
+                        selected = currentRoute == item.route,
+                        onClick = {
+                            navController.navigate(item.route) {
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        }
                     )
-                },
-                label = { Text(item.title) },
-                selected = currentRoute == item.route,
-                onClick = {
-                    navController.navigate(item.route) {
-                        launchSingleTop = true
-                        restoreState = true
-                    }
                 }
-            )
+            }
         }
-    } }
     )
 }

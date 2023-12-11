@@ -58,6 +58,7 @@ class MainActivity : ComponentActivity() {
                         Screen.Login.route -> {
                             bottomBarState.value = false
                         }
+
                         else -> bottomBarState.value = true
                     }
                     Scaffold(
