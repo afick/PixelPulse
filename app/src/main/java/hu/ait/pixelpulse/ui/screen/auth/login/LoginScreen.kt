@@ -51,8 +51,8 @@ fun LoginScreen(
     onLoginSuccess: () -> Unit
 ) {
     var showPassword by rememberSaveable { mutableStateOf(false) }
-    var email by rememberSaveable { mutableStateOf("") }
-    var password by rememberSaveable { mutableStateOf("") }
+    var email by rememberSaveable { mutableStateOf("alexfick13@gmail.com") }
+    var password by rememberSaveable { mutableStateOf("123456") }
 
     val coroutineScope = rememberCoroutineScope()
     var login by rememberSaveable { mutableStateOf(false) }

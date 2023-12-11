@@ -24,6 +24,7 @@ import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 import java.net.URLEncoder
 import java.util.UUID
+import java.util.UUID.randomUUID
 
 class WritePostScreenViewModel : ViewModel() {
 
@@ -39,16 +40,30 @@ class WritePostScreenViewModel : ViewModel() {
     fun uploadPost(
         title: String,
         location: String,
-        imgUrl: String = ""
+        imgUrl: String = "",
+        camera : String,
+        shutterSpeed : String,
+        iso : String,
+        aperture : String
     ) {
         writePostUiState = WritePostUiState.LoadingPostUpload
 
+        val author = if (auth.currentUser!!.displayName != null) {
+            auth.currentUser!!.displayName
+        } else {
+            auth.currentUser!!.email
+        }
+
         val myPost = Post(
-            uid = auth.currentUser!!.uid,
-            author = auth.currentUser!!.email!!,
+            uid = randomUUID().toString(),
+            author = author!!,
             caption = title,
             imgUrl = imgUrl,
-            location = location
+            location = location,
+            camera = camera,
+            shutterSpeed = shutterSpeed,
+            iso = iso,
+            aperture = aperture
         )
 
         val postCollection =
@@ -68,7 +83,11 @@ class WritePostScreenViewModel : ViewModel() {
         contentResolver: ContentResolver,
         imageUri: Uri,
         title: String,
-        location: String
+        location: String,
+        camera : String,
+        shutterSpeed : String,
+        iso : String,
+        aperture : String
     ) {
         viewModelScope.launch {
             writePostUiState = WritePostUiState.LoadingImageUpload
@@ -101,7 +120,7 @@ class WritePostScreenViewModel : ViewModel() {
                         object : OnCompleteListener<Uri> {
                             override fun onComplete(task: Task<Uri>) {
                                 // the public URL of the image is: task.result.toString()
-                                uploadPost(title, location, task.result.toString())
+                                uploadPost(title, location, task.result.toString(), camera, shutterSpeed, iso, aperture)
                             }
                         })
                 }

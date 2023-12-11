@@ -5,14 +5,8 @@ data class Post(
     var author: String = "",
     var caption: String = "",
     var imgUrl: String = "",
-    var location: String = ""
-//    var imgMetadata: ImgMetadata
-)
-
-data class ImgMetadata(
-    var uid: String = "",
-    var camera: Camera,
-    var lens: Lens,
+    var location: String = "",
+    var camera: String = "",
     var shutterSpeed: String = "",
     var aperture: String = "",
     var iso: String = "",
