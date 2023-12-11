@@ -154,7 +154,6 @@ class ProfileViewModel : ViewModel() {
 
 sealed interface ProfileUIState {
     object Init : ProfileUIState
-
     data class Success(val postList: List<PostWithId>) : ProfileUIState
     data class Error(val error: String?) : ProfileUIState
     object LoadingImageUpload : ProfileUIState

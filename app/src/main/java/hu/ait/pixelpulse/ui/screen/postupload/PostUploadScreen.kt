@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -42,12 +43,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import hu.ait.pixelpulse.R
+import hu.ait.pixelpulse.ui.navigation.NavigationItem
 import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -57,17 +60,17 @@ fun PostUploadScreen(
     viewModel: WritePostScreenViewModel = viewModel(),
     navController: NavController
 ) {
+    val context = LocalContext.current
     var postCaption by rememberSaveable { mutableStateOf("") }
     var imageUri by remember {
         mutableStateOf<Uri?>(null)
     }
     var location by rememberSaveable {
-        mutableStateOf("")
+        mutableStateOf(context.getString(R.string.empty_str))
     }
 
     val bitmap = remember { mutableStateOf<Bitmap?>(null) }
 
-    val context = LocalContext.current
 
     val launcher = rememberLauncherForActivityResult(
         contract =
@@ -77,19 +80,19 @@ fun PostUploadScreen(
     }
 
     var camera by remember{
-        mutableStateOf("")
+        mutableStateOf(context.getString(R.string.empty_str))
     }
 
     var ss by remember {
-        mutableStateOf("Auto")
+        mutableStateOf(context.getString(R.string.auto_txt))
     }
 
     var iso by remember {
-        mutableStateOf("Auto")
+        mutableStateOf(context.getString(R.string.auto_txt))
     }
 
     var aperture by remember {
-        mutableStateOf("Auto")
+        mutableStateOf(context.getString(R.string.auto_txt))
     }
 
     var ssExpanded by remember {
@@ -104,7 +107,9 @@ fun PostUploadScreen(
 
     Column(
         modifier = Modifier
-            .fillMaxSize().verticalScroll(rememberScrollState()).padding(bottom = 50.dp),
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(bottom = 50.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
 
     ) {
@@ -126,7 +131,7 @@ fun PostUploadScreen(
                     modifier = Modifier
                         .size(150.dp)
                 )
-                Text(text = "Upload Image")
+                Text(text = stringResource(R.string.upload_image))
                 Spacer(modifier = Modifier.height(40.dp))
             }
 
@@ -144,26 +149,26 @@ fun PostUploadScreen(
                         .size(220.dp)
                         .padding(12.dp)
                 )
-                Text(text = "Choose different image")
+                Text(text = stringResource(R.string.choose_different_image))
             }
         }
         OutlinedTextField(
             value = postCaption, onValueChange = { postCaption = it },
-            label = { Text(text = "Caption") },
+            label = { Text(text = stringResource(R.string.caption_label)) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(12.dp)
         )
         OutlinedTextField(
             value = location, onValueChange = { location = it },
-            label = { Text(text = "Location") },
+            label = { Text(text = stringResource(R.string.location_label)) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 12.dp)
         )
         OutlinedTextField(
             value = camera, onValueChange = { camera = it },
-            label = { Text(text = "Camera") },
+            label = { Text(text = stringResource(R.string.camera_label)) },
             modifier = Modifier
                 .padding(12.dp)
                 .fillMaxWidth()
@@ -171,10 +176,12 @@ fun PostUploadScreen(
         ExposedDropdownMenuBox(expanded = isoExpanded, onExpandedChange = { isoExpanded = it }) {
             TextField(
                 value = iso, onValueChange = {},
-                label = { Text(text = "ISO") },
-                modifier = Modifier.fillMaxWidth()
+                label = { Text(text = stringResource(R.string.iso_label)) },
+                modifier = Modifier
+                    .fillMaxWidth()
                     .padding(horizontal = 12.dp, vertical = 4.dp)
-                    .menuAnchor().align(Alignment.CenterHorizontally), // TODO: Alignment doesnt work
+                    .menuAnchor()
+                    .align(Alignment.CenterHorizontally), // TODO: Alignment doesnt work
                 readOnly = true,
                 trailingIcon = {
                     ExposedDropdownMenuDefaults.TrailingIcon(expanded = isoExpanded)
@@ -187,10 +194,10 @@ fun PostUploadScreen(
 
                 DropdownMenuItem(
                     text = {
-                        Text(text = "Auto")
+                        Text(text = stringResource(R.string.auto_txt))
                     },
                     onClick = {
-                        iso = "Auto"
+                        iso = context.getString(R.string.auto_txt)
                         isoExpanded = false
                     }
                 )
@@ -210,9 +217,10 @@ fun PostUploadScreen(
         ExposedDropdownMenuBox(expanded = ssExpanded, onExpandedChange = { ssExpanded = it }) {
             TextField(
                 value = ss, onValueChange = {},
-                label = { Text(text = "Shutter Speed") },
+                label = { Text(text = stringResource(R.string.shutter_speed_label)) },
                 modifier = Modifier
-                    .padding(horizontal = 12.dp, vertical = 16.dp).fillMaxWidth()
+                    .padding(horizontal = 12.dp, vertical = 16.dp)
+                    .fillMaxWidth()
                     .menuAnchor(),
                 readOnly = true,
                 trailingIcon = {
@@ -224,10 +232,10 @@ fun PostUploadScreen(
 
                 DropdownMenuItem(
                     text = {
-                        Text(text = "Auto")
+                        Text(text = stringResource(R.string.auto_txt))
                     },
                     onClick = {
-                        ss = "Auto"
+                        ss = context.getString(R.string.auto_txt)
                         ssExpanded = false
                     }
                 )
@@ -257,10 +265,10 @@ fun PostUploadScreen(
                 )) {
                     DropdownMenuItem(
                         text = {
-                            Text(text = "1/$i")
+                            Text(text = stringResource(R.string.ss_num, i))
                         },
                         onClick = {
-                            ss = "1/$i"
+                            ss = context.getString(R.string.ss_num, i)
                             ssExpanded = false
                         }
                     )
@@ -272,9 +280,10 @@ fun PostUploadScreen(
             onExpandedChange = { apertureExpanded = it }) {
             TextField(
                 value = aperture, onValueChange = {},
-                label = { Text(text = "Aperture") },
+                label = { Text(text = stringResource(R.string.aperture_label)) },
                 modifier = Modifier
-                    .padding(horizontal = 12.dp).fillMaxWidth()
+                    .padding(horizontal = 12.dp)
+                    .fillMaxWidth()
                     .menuAnchor(),
                 readOnly = true,
                 trailingIcon = {
@@ -288,20 +297,20 @@ fun PostUploadScreen(
 
                 DropdownMenuItem(
                     text = {
-                        Text(text = "Auto")
+                        Text(text = stringResource(R.string.auto_txt))
                     },
                     onClick = {
-                        aperture = "Auto"
+                        aperture = context.getString(R.string.auto_txt)
                         apertureExpanded = false
                     }
                 )
                 for (i in listOf(1.4, 1.8, 2.0, 2.8, 4.0, 5.6, 8, 11, 14, 18, 22)) {
                     DropdownMenuItem(
                         text = {
-                            Text(text = "F/$i")
+                            Text(text = stringResource(R.string.f_stop_txt, i))
                         },
                         onClick = {
-                            aperture = "F/$i"
+                            aperture = context.getString(R.string.f_stop_txt, i)
                             apertureExpanded = false
                         }
                     )
@@ -320,40 +329,43 @@ fun PostUploadScreen(
                             imageUri!!,
                             postCaption,
                             location,
-                            camera = if (camera != "") camera else "Unknown",
+                            camera = if (camera != "") camera else context.getString(R.string.unknown_cam),
                             shutterSpeed = ss,
                             iso = iso,
                             aperture = aperture
                         )
+                } else {
+                    Toast.makeText(context,
+                        context.getString(R.string.upload_an_image_toast), Toast.LENGTH_SHORT).show()
                 }
             },
             modifier = Modifier.padding(12.dp)
         ) {
-            Text(text = "Upload Post")
+            Text(text = stringResource(R.string.upload_post))
         }
 
         when (viewModel.writePostUiState) {
             is WritePostUiState.LoadingPostUpload -> CircularProgressIndicator()
             is WritePostUiState.PostUploadSuccess -> {
-                Text(text = "Post uploaded.")
+                Text(text = stringResource(R.string.post_uploaded))
             }
 
             is WritePostUiState.ErrorDuringPostUpload ->
                 Text(
                     text =
-                    "${(viewModel.writePostUiState as WritePostUiState.ErrorDuringPostUpload).error}"
+                    (viewModel.writePostUiState as WritePostUiState.ErrorDuringPostUpload).error!!
                 )
 
             is WritePostUiState.LoadingImageUpload -> CircularProgressIndicator()
             is WritePostUiState.ImageUploadSuccess -> {
-                Text(text = "Image uploaded, starting post upload.")
+                Text(text = stringResource(R.string.image_uploaded_starting_post_upload))
             }
 
             is WritePostUiState.ErrorDuringImageUpload ->
-                Text(text = "${(viewModel.writePostUiState as WritePostUiState.ErrorDuringImageUpload).error}")
+                Text(text = (viewModel.writePostUiState as WritePostUiState.ErrorDuringImageUpload).error!!)
 
             is WritePostUiState.NavigateToNextScreen -> {
-                navController.navigate("feed")
+                navController.navigate(NavigationItem.Feed.route)
             }
 
             else -> {}

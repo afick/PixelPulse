@@ -15,10 +15,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import hu.ait.pixelpulse.ui.navigation.BottomNavigationBar
@@ -44,8 +48,20 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
+                    // State of bottomBar, set state to false, if current page route is "car_details"
+                    val bottomBarState = rememberSaveable { (mutableStateOf(true)) }
+
+                    val navBackStackEntry by navController.currentBackStackEntryAsState()
+
+// Control TopBar and BottomBar
+                    when (navBackStackEntry?.destination?.route) {
+                        Screen.Login.route -> {
+                            bottomBarState.value = false
+                        }
+                        else -> bottomBarState.value = true
+                    }
                     Scaffold(
-                        bottomBar = { BottomNavigationBar(navController) }
+                        bottomBar = { BottomNavigationBar(navController, bottomBarState) }
                     ) {
                         NavGraph(navController)
                     }
@@ -101,6 +117,5 @@ fun NavGraph(navController: NavHostController) {
         composable(NavigationItem.UserProfile.route) {
             UserProfile()
         }
-        // Add other destinations as needed
     }
 }
